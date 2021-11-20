@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const Movie = require('../models/movie');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -25,7 +24,7 @@ const deleteMovie = (req, res, next) => {
             res.send({ data: movie });
           });
       }
-      next(new ForbiddenError('Forbidden'));
+      next(new ForbiddenError('Forbidden Error'));
     })
     .catch(next);
 };

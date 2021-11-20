@@ -7,6 +7,8 @@ const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
+const { JWT_SECRET } = process.env;
+
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -34,8 +36,6 @@ const updateUser = (req, res, next) => {
     })
     .catch(next);
 };
-
-// не возвращать пароль
 
 const createUser = (req, res, next) => {
   const {
@@ -75,7 +75,7 @@ const login = (req, res, next) => {
           if (!matched) {
             res.send('Incorrect email or password');
           }
-          const token = { token: jwt.sign({ _id: user.id }, 'secret-key', { expiresIn: '7d' }) };
+          const token = { token: jwt.sign({ _id: user.id }, JWT_SECRET, { expiresIn: '7d' }) };
           res.send(token);
         })
         .catch(() => next(new UnauthorizedError('User not found')));

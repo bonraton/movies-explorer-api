@@ -1,30 +1,29 @@
-// require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
+const { limiterConfig } = require('./helpers/constants');
 const { jwtCheck } = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/user');
 const { createUserValidator, loginValidator } = require('./middlewares/validation');
 const NotfoundError = require('./errors/NotFoundError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { errorHandler } = require('./middlewares/errorHandler');
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-
-const { PORT = 3000 } = process.env;
+const { MONGO_SERVER, PORT } = process.env;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
+mongoose.connect(MONGO_SERVER, {
   useNewUrlParser: true,
 });
+
+const limiter = rateLimit(limiterConfig);
 
 app.use(requestLogger);
 app.use(helmet());
@@ -37,17 +36,13 @@ app.use('/signup', createUserValidator, createUser);
 app.use('/signin', loginValidator, login);
 
 app.use('*', jwtCheck, (req, res, next) => {
-  next(new NotfoundError('Not found'));
+  next(new NotfoundError('Page not found'));
 });
 
 app.use(errorLogger);
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500 ? 'Internal Error' : message });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT);
