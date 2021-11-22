@@ -11,8 +11,7 @@ const { createUserValidator, loginValidator } = require('./middlewares/validatio
 const NotfoundError = require('./errors/NotFoundError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errorHandler } = require('./middlewares/errorHandler');
-
-const { MONGO_SERVER, PORT } = process.env;
+const { MONGO_SERVER, PORT } = require('./helpers/enviromentConstants');
 
 const app = express();
 
