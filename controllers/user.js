@@ -2,18 +2,22 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { options } = require('../helpers/constants');
-const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
-const ConflictError = require('../errors/ConflictError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const errorMessages = require('../errors/errorMessages');
+const errorNames = require('../errors/errorNames');
+const {
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+  UnauthorizedError,
+} = require('../errors/errorClasses');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET } = require('../helpers/enviromentConstants');
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError(errorMessages.notFound);
       }
       res.send({ data: user });
     })
@@ -25,14 +29,15 @@ const updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { email, name }, options)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('User not found');
+        throw new NotFoundError(errorMessages.notFound);
       }
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'MongoServerError' && err.code === 11000) {
-        throw new ConflictError('User with this email is already registered');
+      if (err.code === 11000) {
+        throw new ConflictError(errorMessages.conflict);
       }
+      throw err;
     })
     .catch(next);
 };
@@ -52,11 +57,11 @@ const createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequestError('Bad request');
+      if (err.name === errorNames.Validation) {
+        throw new BadRequestError(errorMessages.badRequest);
       }
-      if (err.name === 'MongoServerError' && err.code === 11000) {
-        throw new ConflictError('User with this email is already registered');
+      if (err.code === 11000) {
+        throw new ConflictError(errorMessages.conflict);
       }
       next(err);
     })
@@ -68,17 +73,17 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        res.send('Incorrect email or password');
+        res.send(errorMessages.login);
       }
       bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            res.send('Incorrect email or password');
+            res.send(errorMessages.login);
           }
-          const token = { token: jwt.sign({ _id: user.id }, JWT_SECRET, { expiresIn: '7d' }) };
+          const token = { token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' }) };
           res.send(token);
         })
-        .catch(() => next(new UnauthorizedError('User not found')));
+        .catch(() => next(new UnauthorizedError(errorMessages.login)));
     });
 };
 

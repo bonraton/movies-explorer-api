@@ -1,7 +1,7 @@
 const Movie = require('../models/movie');
-const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/BadRequestError');
-const ForbiddenError = require('../errors/ForbiddenError');
+
+const { BadRequestError, NotFoundError, ForbiddenError } = require('../errors/errorClasses');
+const errorMessages = require('../errors/errorMessages');
 
 const getMovies = (req, res, next) => {
   Movie.find({})
@@ -13,25 +13,36 @@ const getMovies = (req, res, next) => {
 
 const deleteMovie = (req, res, next) => {
   Movie.findById(req.params.id)
-    // eslint-disable-next-line consistent-return
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Movie not found');
+        throw new NotFoundError(errorMessages.notFound);
       }
       if (movie.owner.equals(req.user._id)) {
-        return movie.deleteOne(movie)
+        movie.deleteOne(movie)
           .then(() => {
             res.send({ data: movie });
           });
       }
-      next(new ForbiddenError('Forbidden Error'));
+      throw new ForbiddenError(errorMessages.forbidden);
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const addMovie = (req, res, next) => {
   const {
-    country, director, year, duration, description, trailer, image, nameRu, nameEn, thumbnail,
+    country,
+    director,
+    year,
+    duration,
+    description,
+    trailer,
+    image,
+    thumbnail,
+    MovieId,
+    nameRU,
+    nameEN,
   } = req.body;
   Movie.create({
     country,
@@ -42,16 +53,17 @@ const addMovie = (req, res, next) => {
     image,
     trailer,
     thumbnail,
+    MovieId,
     owner: req.user._id,
-    nameRu,
-    nameEn,
+    nameRU,
+    nameEN,
   })
     .then((movie) => {
       res.send({ data: movie });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Bad request'));
+        next(new BadRequestError(errorMessages.badRequest));
       } else {
         next(err);
       }

@@ -41,8 +41,9 @@ const addMovieValidator = celebrate({
     image: joiStringRequired.custom(checkUrlValidity),
     trailer: joiStringRequired.custom(checkUrlValidity),
     thumbnail: joiStringRequired.custom(checkUrlValidity),
-    nameRu: joiStringRequired,
-    nameEn: joiStringRequired,
+    MovieId: joiNumberRequired,
+    nameRU: joiStringRequired,
+    nameEN: joiStringRequired,
   }),
 });
 
