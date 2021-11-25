@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const errorMessages = require('../errors/errorMessages');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -26,26 +27,26 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: (value) => validator.isURL(value),
-    message: 'Wrong URL format',
+    message: errorMessages.urlValidation,
   },
   trailer: {
     type: String,
     required: true,
     validate: (value) => validator.isURL(value),
-    message: 'Wrong URL format',
+    message: errorMessages.urlValidation,
   },
   thumbnail: {
     type: String,
     required: true,
     validate: (value) => validator.isURL(value),
-    message: 'Wrong URL format',
+    message: errorMessages.urlValidation,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
   },
-  MovieId: {
+  movieId: {
     type: Number,
     required: true,
   },

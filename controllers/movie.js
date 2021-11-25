@@ -40,7 +40,7 @@ const addMovie = (req, res, next) => {
     trailer,
     image,
     thumbnail,
-    MovieId,
+    movieId,
     nameRU,
     nameEN,
   } = req.body;
@@ -53,7 +53,7 @@ const addMovie = (req, res, next) => {
     image,
     trailer,
     thumbnail,
-    MovieId,
+    movieId,
     owner: req.user._id,
     nameRU,
     nameEN,

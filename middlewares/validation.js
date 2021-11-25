@@ -1,5 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 const { isURL, isEmail, isMongoId } = require('validator');
+const errorMessages = require('../errors/errorMessages');
 
 const joiStringRequired = Joi.string().required();
 const joiNumberRequired = Joi.number().required();
@@ -8,21 +9,21 @@ const checkUrlValidity = (value) => {
   if (isURL(value)) {
     return value;
   }
-  throw new Error('Wrong URL format');
+  throw new Error(errorMessages.urlValidation);
 };
 
 const checkEmailValidity = (value) => {
   if (isEmail(value)) {
     return value;
   }
-  throw new Error('Wrong Email format');
+  throw new Error(errorMessages.emailValidation);
 };
 
 const checkObjectIdValidity = (value) => {
   if (isMongoId(value)) {
     return value;
   }
-  throw new Error('Wrong objectId format');
+  throw new Error(errorMessages.idValidation);
 };
 
 const objectIdValidator = celebrate({
@@ -41,7 +42,7 @@ const addMovieValidator = celebrate({
     image: joiStringRequired.custom(checkUrlValidity),
     trailer: joiStringRequired.custom(checkUrlValidity),
     thumbnail: joiStringRequired.custom(checkUrlValidity),
-    MovieId: joiNumberRequired,
+    movieId: joiNumberRequired,
     nameRU: joiStringRequired,
     nameEN: joiStringRequired,
   }),
