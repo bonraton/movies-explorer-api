@@ -37,7 +37,7 @@ const updateUser = (req, res, next) => {
       if (err.code === 11000) {
         throw new ConflictError(errorMessages.conflict);
       }
-      throw err;
+      // throw err;
     })
     .catch(next);
 };
@@ -73,12 +73,12 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        res.send(errorMessages.login);
+        next(new UnauthorizedError(errorMessages.login))
       }
       bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            res.send(errorMessages.login);
+            next(new UnauthorizedError(errorMessages.login))
           }
           const token = { token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' }) };
           res.send(token);
