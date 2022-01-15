@@ -2,12 +2,12 @@ const errorMessages = {
   notFound: 'Not found',
   forbidden: 'Forbidden',
   badRequest: 'Bad request',
-  conflict: 'User with this email is already registered',
-  login: 'Incorrect Email or password',
-  unauthorized: 'AuthorizationError',
-  urlValidation: 'Wrong URL format',
-  emailValidation: 'Wrong Url format',
-  idValidation: 'Wrong objectId format',
+  conflict: 'Пользователь с указанным Email уже зарегистрирован',
+  login: 'Неправльные email или пароль',
+  unauthorized: 'Ошибка авторизации',
+  urlValidation: 'Некорректный формат URL',
+  emailValidation: 'Некорректный формат Email',
+  idValidation: 'Некорректный формат objectId',
 };
 
 module.exports = errorMessages;

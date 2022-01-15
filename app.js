@@ -8,6 +8,7 @@ const { limiterConfig } = require('./helpers/constants');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { MONGO_SERVER, PORT } = require('./helpers/enviromentConstants');
+const cors = require('cors');
 
 const app = express();
 
@@ -17,6 +18,21 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(MONGO_SERVER, {
   useNewUrlParser: true,
 });
+
+const corsOptions = {
+  origin: 
+  ['https://api.nomoreparties.co/beatfilm-movies',
+  'https://moviekirillnaruls.nomoredomains.rocks/',
+    'http://localhost:4000',
+    'http://localhost:3000'],
+  methods: ['PUT', 'GET', 'POST', 'PATCH', 'DELETE', 'HEAD'],
+  preflightContinue: false,
+  optionSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
+app.use('*', cors(corsOptions));
 
 const limiter = rateLimit(limiterConfig);
 

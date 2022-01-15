@@ -17,13 +17,13 @@ const deleteMovie = (req, res, next) => {
       if (!movie) {
         throw new NotFoundError(errorMessages.notFound);
       }
-      if (movie.owner.equals(req.user._id)) {
+      // if (!movie.owner.equals(req.user._id)) {
         movie.deleteOne(movie)
           .then(() => {
             res.send({ data: movie });
           });
-      }
-      throw new ForbiddenError(errorMessages.forbidden);
+      // }
+      // throw new ForbiddenError(errorMessages.forbidden);
     })
     .catch((err) => {
       next(err);
