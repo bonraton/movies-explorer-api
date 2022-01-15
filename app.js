@@ -22,7 +22,7 @@ mongoose.connect(MONGO_SERVER, {
 const corsOptions = {
   origin: 
   ['https://api.nomoreparties.co/beatfilm-movies',
-  'https://moviekirillnaruls.nomoredomains.rocks/',
+  'https://moviekirillnaruls.nomoredomains.rocks',
     'http://localhost:4000',
     'http://localhost:3000'],
   methods: ['PUT', 'GET', 'POST', 'PATCH', 'DELETE', 'HEAD'],
