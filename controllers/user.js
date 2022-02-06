@@ -79,9 +79,10 @@ const login = (req, res, next) => {
         .then((matched) => {
           if (!matched) {
             next(new UnauthorizedError(errorMessages.login))
+          } else {
+            const token = { token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' }) };
+            res.send(token);
           }
-          const token = { token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' }) };
-          res.send(token);
         })
         .catch(() => next(new UnauthorizedError(errorMessages.login)));
     });
